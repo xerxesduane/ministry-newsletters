@@ -3,6 +3,7 @@
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js'
 
 import {Store} from './store.js'
+import {VERSION} from './version.js'
 import {register_newsletter_tools} from './tools/newsletters.js'
 import {register_partner_tools} from './tools/partners.js'
 import {register_stello_tools} from './tools/stello.js'
@@ -33,7 +34,7 @@ Two rules worth keeping:
 export function build_server(store: Store = new Store()): McpServer {
     const server = new McpServer({
         name: 'epistle',
-        version: '0.1.0',
+        version: VERSION,
     }, {
         instructions: INSTRUCTIONS,
     })

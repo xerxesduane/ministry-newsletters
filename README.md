@@ -1,14 +1,18 @@
 # Epistle
 
-An MCP server that lets Claude write your ministry newsletters and get them to your partners —
-either through [Stello](https://stello.news) (encrypted, interactive, retractable) or as ordinary
-email.
+Write your ministry newsletters with an AI assistant, and get them to your partners — either
+through [Stello](https://stello.news) (encrypted, interactive, retractable) or as ordinary email.
+
+Epistle is an [MCP](https://modelcontextprotocol.io) server, so it plugs into Claude, ChatGPT, or
+any other assistant that speaks MCP. It runs on your own computer; your partner list, your
+newsletters and your email credentials never leave it.
 
 *ἐπιστολή — a letter sent to.* The apostolic letters were written to the churches and partners
 who supported the work. That is what a ministry partner newsletter still is.
 
-You describe the update; Claude writes it, shows you a preview, and hands it to Stello as a real
-draft. **You review it and press Send.** Nothing reaches a partner without you seeing it first.
+You describe the update; your assistant writes it, shows you a preview, and hands it to Stello as
+a real draft. **You review it and press Send.** Nothing reaches a partner without you seeing it
+first.
 
 ---
 
@@ -23,11 +27,11 @@ There is, however, one supported door: Stello can **restore from a backup file**
 a key that already exists. So an import can only ever **add** records — it cannot modify or delete
 anything already in Stello.
 
-This connector writes that file. It never touches Stello's database directly, never handles your
+Epistle writes that file. It never touches Stello's database directly, never handles your
 encryption keys, and never sends on your behalf through Stello.
 
 ```
-  Claude ──▶ this MCP server ──▶ stello-import-<id>.json
+  Your AI ──▶ Epistle ──▶ stello-import-<id>.json
                                           │
                                   you import it in Stello
                                           ▼
@@ -40,44 +44,110 @@ encryption keys, and never sends on your behalf through Stello.
                     own email account
 ```
 
-The one thing the connector cannot do is press Send for you. For a newsletter going to real
+The one thing Epistle cannot do is press Send for you. For a newsletter going to real
 supporters, that turns out to be the feature.
 
 ---
 
-## Setup
+## Install
 
-Requires Node.js 20 or newer.
+You need [Node.js](https://nodejs.org) 20 or newer — download the LTS installer, click through it,
+done. That is the only prerequisite.
+
+> **Not on npm yet.** The `npx -y epistle-mcp` commands below are what setup will look like once
+> the package is published. Until then, follow **[Running from source](#running-from-source)**
+> first, and wherever you see `npx -y epistle-mcp`, use
+> `node /path/to/ministry-newsletters/dist/src/index.js` instead.
+
+Then pick how your AI connects.
+
+### Claude Desktop, Claude Code, and anything else that runs a local tool
+
+These launch Epistle themselves. Nothing to install by hand.
+
+**Claude Desktop** — Settings → Developer → Edit Config, and add:
+
+```json
+{
+  "mcpServers": {
+    "epistle": {
+      "command": "npx",
+      "args": ["-y", "epistle-mcp"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop. That is the whole setup.
+
+**Claude Code** — one line:
+
+```bash
+claude mcp add epistle -- npx -y epistle-mcp
+```
+
+### ChatGPT, and other agents that connect to a URL
+
+These cannot launch a program on your computer; they connect to an address. So run Epistle
+yourself, then give the agent its URL:
+
+```bash
+npx -y epistle-mcp --http
+```
+
+```
+Epistle 0.2.0 is running.
+
+  MCP endpoint   http://127.0.0.1:8765/mcp
+  Access         this computer only
+
+Add that URL to your agent as a custom MCP connector. Press Ctrl+C to stop.
+```
+
+Add that URL as a custom MCP connector. Leave the window open while you work.
+
+> **A URL-based agent must be able to reach that address.** `127.0.0.1` means *this computer only*,
+> which is right for an agent running on the same machine. A cloud assistant — ChatGPT on the web
+> among them — cannot see it. To reach Epistle from elsewhere you have to expose it deliberately,
+> and then it needs a token:
+>
+> ```bash
+> npx -y epistle-mcp --http --host 0.0.0.0 --token "a-long-random-secret"
+> ```
+>
+> Epistle refuses to bind beyond your computer without one, because that port can read your
+> partner list and send email as you. Think hard before opening it: for missionaries in
+> restricted-access countries, a reachable supporter list is a real risk, not a theoretical one.
+
+### Running from source
+
+This is the way to run Epistle today, until the npm package is published.
 
 ```bash
 git clone https://github.com/xerxesduane/ministry-newsletters.git
 cd ministry-newsletters
 npm install        # also builds
-npm test           # 107 tests, including 12 that drive the real server
+npm test           # 126 tests — all should pass
+pwd                # note this path, you need it below
+node dist/src/index.js --help
 ```
 
-<sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
-
-Add it to your MCP client. For Claude Code:
-
-```bash
-claude mcp add epistle -- node /absolute/path/to/ministry-newsletters/dist/src/index.js
-```
-
-Or by hand, in `claude_desktop_config.json` / `.mcp.json`:
+Then point your assistant at the built file rather than at `npx`:
 
 ```json
 {
   "mcpServers": {
     "epistle": {
       "command": "node",
-      "args": ["/absolute/path/to/ministry-newsletters/dist/src/index.js"]
+      "args": ["/the/path/from/pwd/dist/src/index.js"]
     }
   }
 }
 ```
 
-Then ask Claude to run `stello_status` — it reports what it can see and what is missing.
+<sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
+
+Then ask your AI to run `stello_status` — it reports what it can see and what is missing.
 
 ### Letting it see your Stello contacts
 
@@ -85,7 +155,7 @@ If your partners are already in Stello, import them so the handoff file addresse
 Stello already has instead of duplicating them:
 
 1. In Stello: **Settings → Backup → "Back up database now"**
-2. Ask Claude to run `partners_import_from_stello`
+2. Ask your assistant to run `partners_import_from_stello`
 
 This reads Stello's backup file. It is read-only — nothing is written back.
 
@@ -106,18 +176,18 @@ Only needed if you want to send without Stello. Add to the server's `env`:
 | `EPISTLE_SMTP_FROM_NAME` | e.g. `The Rock City Church` |
 | `EPISTLE_SMTP_REPLY_TO` | where replies go (optional) |
 
-Credentials live in your MCP client's config and are never written into this connector's files.
+Credentials live in your assistant's config or your shell, and are never written into Epistle's own files.
 
 ---
 
 ## Using it
 
-Just talk to Claude. A real session looks like:
+Just talk to your assistant. A real session looks like:
 
 > **"Write our October partner update. We had 43 baptisms, the building fund is at $6,100 of
 > $10,000, and Pastor James is heading to Kenya in November. Send it to the monthly supporters."**
 
-Claude will create the newsletter, write the sections, add a chart for the building fund, set the
+It will create the newsletter, write the sections, add a chart for the building fund, set the
 audience, and render you a preview to read before anything happens.
 
 ### The flow
@@ -179,13 +249,13 @@ situations for workers in sensitive countries.
 
 **Use direct email** for a simple public update, or before Stello is set up.
 
-Ask Claude to run `stello_how_it_works` for the long version.
+Ask your assistant to run `stello_how_it_works` for the long version.
 
 ---
 
 ## Safety rails
 
-Sending to a partner list is not undoable, so the connector is built to fail closed.
+Sending to a partner list is not undoable, so Epistle is built to fail closed.
 
 - **`newsletter_preview` before anything goes out.** Renders exactly what a partner will see.
 - **`email_send` defaults to `dry_run: true`** — it lists who *would* receive it and sends nothing.
@@ -261,12 +331,14 @@ from. Stello never reuses a name there, so copying a file in is additive.
 ```bash
 npm run build       # compile
 npm run typecheck   # tsc --noEmit
-npm test            # build + run all tests
+npm test            # build + run all 126 tests
 ```
 
 ```
 src/
-├── index.ts          entry (stdio transport)
+├── index.ts          entry — chooses stdio or HTTP
+├── cli.ts            argument parsing and --help
+├── http.ts           HTTP transport, for agents that connect by URL
 ├── server.ts         tool registration
 ├── config.ts         paths, Stello discovery, SMTP config
 ├── store.ts          persistence + audience resolution
@@ -287,6 +359,17 @@ src/
 `tests/export.test.ts` contains `replay_stello_import`, a reimplementation of Stello's
 `import_database()` using the same converters and the same `add()` semantics. Our output is run
 through it to prove the file imports cleanly and that an import can only add.
+
+### Publishing a new version
+
+```bash
+npm version patch          # or minor / major — also updates src/version.ts by hand
+npm publish                # prepublishOnly builds and runs the tests first
+git push --follow-tags
+```
+
+`src/version.ts` is the single source of truth for what the server reports over MCP; keep it in
+step with `package.json`.
 
 ### Keeping up with Stello
 
