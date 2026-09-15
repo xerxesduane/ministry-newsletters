@@ -1,0 +1,38 @@
+{
+  "name": "ministry-newsletters-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that lets Claude write ministry newsletters and deliver them to partners via Stello (end-to-end encrypted) or direct email.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ministry-newsletters-mcp": "dist/src/index.js"
+  },
+  "main": "dist/src/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "start": "node dist/src/index.js",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "nodemailer": "^10.0.10",
+    "papaparse": "^5.5.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/papaparse": "^5.3.15",
+    "typescript": "^5.7.0"
+  }
+}
