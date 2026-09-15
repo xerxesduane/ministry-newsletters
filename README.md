@@ -56,6 +56,11 @@ done. That is the only prerequisite.
 
 Then pick how your AI connects.
 
+> Epistle is not on npm yet, so the commands below install it straight from GitHub. That works
+> today — npm fetches it, compiles it and caches it for you, so only the very first run is slow
+> (a few seconds after that). Once it is published, `github:xerxesduane/ministry-newsletters`
+> shortens to `epistle-mcp` everywhere below and nothing else changes.
+
 ### Claude Desktop, Claude Code, and anything else that runs a local tool
 
 These launch Epistle themselves. Nothing to install by hand.
@@ -67,7 +72,7 @@ These launch Epistle themselves. Nothing to install by hand.
   "mcpServers": {
     "epistle": {
       "command": "npx",
-      "args": ["-y", "epistle-mcp"]
+      "args": ["-y", "github:xerxesduane/ministry-newsletters"]
     }
   }
 }
@@ -78,7 +83,7 @@ Restart Claude Desktop. That is the whole setup.
 **Claude Code** — one line:
 
 ```bash
-claude mcp add epistle -- npx -y epistle-mcp
+claude mcp add epistle -- npx -y github:xerxesduane/ministry-newsletters
 ```
 
 ### ChatGPT, and other agents that connect to a URL
@@ -87,7 +92,7 @@ These cannot launch a program on your computer; they connect to an address. So r
 yourself, then give the agent its URL:
 
 ```bash
-npx -y epistle-mcp --http
+npx -y github:xerxesduane/ministry-newsletters --http
 ```
 
 ```
@@ -107,7 +112,7 @@ Add that URL as a custom MCP connector. Leave the window open while you work.
 > and then it needs a token:
 >
 > ```bash
-> npx -y epistle-mcp --http --host 0.0.0.0 --token "a-long-random-secret"
+> npx -y github:xerxesduane/ministry-newsletters --http --host 0.0.0.0 --token "a-long-random-secret"
 > ```
 >
 > Epistle refuses to bind beyond your computer without one, because that port can read your

@@ -38,7 +38,12 @@ HTTP OPTIONS
 CONNECTING
   Claude Desktop / Claude Code — point the client at this command:
 
-    {"mcpServers": {"epistle": {"command": "npx", "args": ["-y", "epistle-mcp"]}}}
+    {"mcpServers": {"epistle": {
+       "command": "npx",
+       "args": ["-y", "github:xerxesduane/ministry-newsletters"]
+    }}}
+
+  (Once Epistle is published to npm, that spec shortens to "epistle-mcp".)
 
   ChatGPT and other URL-based agents — run "epistle --http" and give the
   printed URL to the client as a custom MCP connector.
