@@ -20,7 +20,19 @@ export interface ParsedArgs {
 const DEFAULT_PORT = 8765
 const DEFAULT_HOST = '127.0.0.1'
 
-export const HELP = `
+/**
+ * The path a client should launch, with separators JSON can carry unescaped.
+ *
+ * Windows hands us backslashes, which have to be doubled inside JSON — a quiet way to end up
+ * with a config that never starts. Printing forward slashes sidesteps it; node accepts both.
+ */
+function entry_path(): string {
+    return (process.argv[1] ?? 'dist/src/index.js').replace(/\\/g, '/')
+}
+
+export function help_text(): string {
+    const entry = entry_path()
+    return `
 Epistle — write ministry newsletters and deliver them to partners.
 
 USAGE
@@ -36,17 +48,22 @@ HTTP OPTIONS
                                Generated automatically when binding beyond this computer.
 
 CONNECTING
-  Claude Desktop / Claude Code — point the client at this command:
+  Claude Desktop — Settings > Developer > Edit Config, add this, then quit
+  Claude Desktop completely and reopen it:
 
     {"mcpServers": {"epistle": {
-       "command": "npx",
-       "args": ["-y", "github:xerxesduane/ministry-newsletters"]
+       "command": "node",
+       "args": ["${entry}"]
     }}}
 
-  (Once Epistle is published to npm, that spec shortens to "epistle-mcp".)
+  Claude Code:
 
-  ChatGPT and other URL-based agents — run "epistle --http" and give the
-  printed URL to the client as a custom MCP connector.
+    claude mcp add epistle -- node ${entry}
+
+  ChatGPT and other URL-based agents — run this, then give the printed URL
+  to the client as a custom MCP connector:
+
+    node ${entry} --http
 
 ENVIRONMENT
   EPISTLE_DIR                  Where newsletters and partners are kept
@@ -63,6 +80,7 @@ ENVIRONMENT
 
 Your newsletters, partners and credentials stay on this computer.
 `.trim()
+}
 
 /** Parse argv (without node and script path). */
 export function parse_args(argv: string[]): ParsedArgs {

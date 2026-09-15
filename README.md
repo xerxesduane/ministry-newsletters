@@ -54,16 +54,38 @@ supporters, that turns out to be the feature.
 You need [Node.js](https://nodejs.org) 20 or newer — download the LTS installer, click through it,
 done. That is the only prerequisite.
 
-Then pick how your AI connects.
+Epistle is not on npm yet, so there is a one-time setup step: fetch it and build it.
 
-> Epistle is not on npm yet, so the commands below install it straight from GitHub. That works
-> today — npm fetches it, compiles it and caches it for you, so only the very first run is slow
-> (a few seconds after that). Once it is published, `github:xerxesduane/ministry-newsletters`
-> shortens to `epistle-mcp` everywhere below and nothing else changes.
+```bash
+git clone https://github.com/xerxesduane/ministry-newsletters.git
+cd ministry-newsletters
+npm install        # installs dependencies and compiles
+npm test           # 126 tests, all should pass
+```
+
+<sub>No git? Download the [ZIP](https://github.com/xerxesduane/ministry-newsletters/archive/refs/heads/main.zip),
+unpack it, and run `npm install` inside the folder.</sub>
+
+Now note the full path to the file that was built — every step below needs it:
+
+| | |
+|---|---|
+| macOS / Linux | `/Users/you/ministry-newsletters/dist/src/index.js` |
+| Windows | `C:/Users/you/ministry-newsletters/dist/src/index.js` |
+
+<sub>On Windows use forward slashes. Backslashes have to be doubled inside JSON, and that is a
+common way to get a config that silently fails.</sub>
+
+> **Why not one line?** Because `npx -y epistle-mcp` needs the package to be on npm, and it is not
+> published yet. Installing straight from GitHub does not work either: npm 12 refuses git-sourced
+> packages by default (`EALLOWGIT`), a supply-chain protection worth leaving on. Publishing to npm
+> removes this whole section — setup becomes `npx -y epistle-mcp` with nothing to clone or build.
+
+Then pick how your AI connects.
 
 ### Claude Desktop, Claude Code, and anything else that runs a local tool
 
-These launch Epistle themselves. Nothing to install by hand.
+These launch Epistle themselves, each time they start.
 
 **Claude Desktop** — Settings → Developer → Edit Config, and add:
 
@@ -71,19 +93,19 @@ These launch Epistle themselves. Nothing to install by hand.
 {
   "mcpServers": {
     "epistle": {
-      "command": "npx",
-      "args": ["-y", "github:xerxesduane/ministry-newsletters"]
+      "command": "node",
+      "args": ["/full/path/to/ministry-newsletters/dist/src/index.js"]
     }
   }
 }
 ```
 
-Restart Claude Desktop. That is the whole setup.
+Then quit Claude Desktop completely and reopen it — closing the window is not enough.
 
 **Claude Code** — one line:
 
 ```bash
-claude mcp add epistle -- npx -y github:xerxesduane/ministry-newsletters
+claude mcp add epistle -- node /full/path/to/ministry-newsletters/dist/src/index.js
 ```
 
 ### ChatGPT, and other agents that connect to a URL
@@ -92,7 +114,7 @@ These cannot launch a program on your computer; they connect to an address. So r
 yourself, then give the agent its URL:
 
 ```bash
-npx -y github:xerxesduane/ministry-newsletters --http
+node /full/path/to/ministry-newsletters/dist/src/index.js --http
 ```
 
 ```
@@ -112,22 +134,12 @@ Add that URL as a custom MCP connector. Leave the window open while you work.
 > and then it needs a token:
 >
 > ```bash
-> npx -y github:xerxesduane/ministry-newsletters --http --host 0.0.0.0 --token "a-long-random-secret"
+> node /full/path/to/ministry-newsletters/dist/src/index.js --http --host 0.0.0.0 --token "a-long-random-secret"
 > ```
 >
 > Epistle refuses to bind beyond your computer without one, because that port can read your
 > partner list and send email as you. Think hard before opening it: for missionaries in
 > restricted-access countries, a reachable supporter list is a real risk, not a theoretical one.
-
-### Running from source instead
-
-```bash
-git clone https://github.com/xerxesduane/ministry-newsletters.git
-cd ministry-newsletters
-npm install        # also builds
-npm test           # 126 tests
-node dist/src/index.js --help
-```
 
 <sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
 

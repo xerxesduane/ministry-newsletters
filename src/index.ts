@@ -4,7 +4,7 @@
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js'
 
 import {build_server} from './server.js'
-import {parse_args, resolve_token, HELP} from './cli.js'
+import {parse_args, resolve_token, help_text} from './cli.js'
 import {start_http, is_loopback} from './http.js'
 import {VERSION} from './version.js'
 
@@ -12,7 +12,7 @@ async function main(): Promise<void> {
     const parsed = parse_args(process.argv.slice(2))
 
     if (parsed.mode === 'help') {
-        console.log(HELP)
+        console.log(help_text())
         return
     }
     if (parsed.mode === 'version') {
