@@ -1,8 +1,11 @@
-# Ministry Newsletters MCP
+# Epistle
 
 An MCP server that lets Claude write your ministry newsletters and get them to your partners —
 either through [Stello](https://stello.news) (encrypted, interactive, retractable) or as ordinary
 email.
+
+*ἐπιστολή — a letter sent to.* The apostolic letters were written to the churches and partners
+who supported the work. That is what a ministry partner newsletter still is.
 
 You describe the update; Claude writes it, shows you a preview, and hands it to Stello as a real
 draft. **You review it and press Send.** Nothing reaches a partner without you seeing it first.
@@ -53,10 +56,12 @@ npm install        # also builds
 npm test           # 107 tests, including 12 that drive the real server
 ```
 
+<sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
+
 Add it to your MCP client. For Claude Code:
 
 ```bash
-claude mcp add ministry-newsletters -- node /absolute/path/to/ministry-newsletters/dist/src/index.js
+claude mcp add epistle -- node /absolute/path/to/ministry-newsletters/dist/src/index.js
 ```
 
 Or by hand, in `claude_desktop_config.json` / `.mcp.json`:
@@ -64,7 +69,7 @@ Or by hand, in `claude_desktop_config.json` / `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "ministry-newsletters": {
+    "epistle": {
       "command": "node",
       "args": ["/absolute/path/to/ministry-newsletters/dist/src/index.js"]
     }
@@ -93,13 +98,13 @@ Only needed if you want to send without Stello. Add to the server's `env`:
 
 | Variable | Meaning |
 |---|---|
-| `MINISTRY_SMTP_HOST` | e.g. `smtp.gmail.com` |
-| `MINISTRY_SMTP_PORT` | `587` for STARTTLS, `465` for TLS (default `587`) |
-| `MINISTRY_SMTP_USER` | mailbox to send from |
-| `MINISTRY_SMTP_PASS` | an **app password**, not your account password |
-| `MINISTRY_SMTP_FROM` | address partners see (defaults to the user) |
-| `MINISTRY_SMTP_FROM_NAME` | e.g. `The Rock City Church` |
-| `MINISTRY_SMTP_REPLY_TO` | where replies go (optional) |
+| `EPISTLE_SMTP_HOST` | e.g. `smtp.gmail.com` |
+| `EPISTLE_SMTP_PORT` | `587` for STARTTLS, `465` for TLS (default `587`) |
+| `EPISTLE_SMTP_USER` | mailbox to send from |
+| `EPISTLE_SMTP_PASS` | an **app password**, not your account password |
+| `EPISTLE_SMTP_FROM` | address partners see (defaults to the user) |
+| `EPISTLE_SMTP_FROM_NAME` | e.g. `The Rock City Church` |
+| `EPISTLE_SMTP_REPLY_TO` | where replies go (optional) |
 
 Credentials live in your MCP client's config and are never written into this connector's files.
 
@@ -219,7 +224,7 @@ Sending to a partner list is not undoable, so the connector is built to fail clo
 ## Where things are stored
 
 ```
-~/.ministry-newsletters/
+~/.epistle/
 ├── store.json                       newsletters, partners, groups
 └── exports/
     ├── preview-<id>.html            open in a browser
@@ -227,7 +232,7 @@ Sending to a partner list is not undoable, so the connector is built to fail clo
     └── <group>.csv
 ```
 
-Override with `MINISTRY_NEWSLETTERS_DIR`. `store.json` is plain JSON — readable, and repairable by
+Override with `EPISTLE_DIR`. `store.json` is plain JSON — readable, and repairable by
 hand if it ever needs to be. Saves are atomic (temp file + rename), so an interrupted write cannot
 truncate your partner list.
 
@@ -303,4 +308,5 @@ Verified against Stello at database version 21, backup format version 1.
 
 ## Licence
 
-MIT. Stello itself is MIT-0 from [Gracious Tech](https://gracious.tech).
+Epistle is MIT. Stello itself is MIT-0 from [Gracious Tech](https://gracious.tech); Epistle is an
+independent tool that interoperates with it and is not affiliated with or endorsed by them.

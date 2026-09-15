@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Entry point: serve the ministry newsletters MCP server over stdio.
+// Entry point: serve the Epistle MCP server over stdio.
 
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js'
 
@@ -10,7 +10,7 @@ async function main(): Promise<void> {
     const transport = new StdioServerTransport()
     await server.connect(transport)
     // stdout carries the protocol, so any diagnostics must go to stderr.
-    console.error('ministry-newsletters MCP server ready')
+    console.error('Epistle MCP server ready')
 }
 
 main().catch((error: unknown) => {

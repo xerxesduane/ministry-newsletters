@@ -1,4 +1,4 @@
-// Assemble the MCP server.
+// Assemble the Epistle MCP server.
 
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js'
 
@@ -32,7 +32,7 @@ Two rules worth keeping:
 
 export function build_server(store: Store = new Store()): McpServer {
     const server = new McpServer({
-        name: 'ministry-newsletters',
+        name: 'epistle',
         version: '0.1.0',
     }, {
         instructions: INSTRUCTIONS,

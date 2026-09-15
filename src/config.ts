@@ -6,11 +6,11 @@ import {existsSync} from 'node:fs'
 
 /** Root for this connector's own data (newsletters, partners, exports). */
 export function data_dir(): string {
-    const override = process.env['MINISTRY_NEWSLETTERS_DIR']
+    const override = process.env['EPISTLE_DIR']
     if (override) {
         return override
     }
-    return join(homedir(), '.ministry-newsletters')
+    return join(homedir(), '.epistle')
 }
 
 export function store_path(): string {
@@ -81,14 +81,14 @@ export interface SmtpConfig {
  * server config, which is where the user already keeps other secrets.
  */
 export function smtp_config(): SmtpConfig | null {
-    const host = process.env['MINISTRY_SMTP_HOST']
-    const user = process.env['MINISTRY_SMTP_USER']
-    const pass = process.env['MINISTRY_SMTP_PASS']
-    const from_address = process.env['MINISTRY_SMTP_FROM'] || user
+    const host = process.env['EPISTLE_SMTP_HOST']
+    const user = process.env['EPISTLE_SMTP_USER']
+    const pass = process.env['EPISTLE_SMTP_PASS']
+    const from_address = process.env['EPISTLE_SMTP_FROM'] || user
     if (!host || !user || !pass || !from_address) {
         return null
     }
-    const port = Number(process.env['MINISTRY_SMTP_PORT'] || 587)
+    const port = Number(process.env['EPISTLE_SMTP_PORT'] || 587)
     return {
         host,
         port,
@@ -96,17 +96,17 @@ export function smtp_config(): SmtpConfig | null {
         user,
         pass,
         from_address,
-        from_name: process.env['MINISTRY_SMTP_FROM_NAME'] || '',
-        reply_to: process.env['MINISTRY_SMTP_REPLY_TO'] || null,
+        from_name: process.env['EPISTLE_SMTP_FROM_NAME'] || '',
+        reply_to: process.env['EPISTLE_SMTP_REPLY_TO'] || null,
     }
 }
 
 /** Which SMTP settings are missing, for an actionable error message. */
 export function smtp_missing_vars(): string[] {
-    const required = ['MINISTRY_SMTP_HOST', 'MINISTRY_SMTP_USER', 'MINISTRY_SMTP_PASS']
+    const required = ['EPISTLE_SMTP_HOST', 'EPISTLE_SMTP_USER', 'EPISTLE_SMTP_PASS']
     const missing = required.filter(name => !process.env[name])
-    if (!process.env['MINISTRY_SMTP_FROM'] && !process.env['MINISTRY_SMTP_USER']) {
-        missing.push('MINISTRY_SMTP_FROM')
+    if (!process.env['EPISTLE_SMTP_FROM'] && !process.env['EPISTLE_SMTP_USER']) {
+        missing.push('EPISTLE_SMTP_FROM')
     }
     return missing
 }

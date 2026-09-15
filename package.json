@@ -1,11 +1,11 @@
 {
-  "name": "ministry-newsletters-mcp",
+  "name": "epistle-mcp",
   "version": "0.1.0",
-  "description": "MCP server that lets Claude write ministry newsletters and deliver them to partners via Stello (end-to-end encrypted) or direct email.",
+  "description": "Epistle - an MCP server that lets Claude write ministry newsletters and deliver them to partners via Stello (end-to-end encrypted) or direct email.",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "ministry-newsletters-mcp": "dist/src/index.js"
+    "epistle": "dist/src/index.js"
   },
   "main": "dist/src/index.js",
   "files": [

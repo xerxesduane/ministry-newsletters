@@ -68,8 +68,8 @@ export function register_stello_tools(server: McpServer, store: Store): void {
         lines.push('', 'Direct email (fallback path)',
             smtp
                 ? `  Configured: ${smtp.user} via ${smtp.host}:${smtp.port}`
-                : '  Not configured. Set MINISTRY_SMTP_HOST, MINISTRY_SMTP_USER and '
-                    + 'MINISTRY_SMTP_PASS to enable it.')
+                : '  Not configured. Set EPISTLE_SMTP_HOST, EPISTLE_SMTP_USER and '
+                    + 'EPISTLE_SMTP_PASS to enable it.')
 
         return data(lines.join('\n'), {
             stello_files: files_dir,

@@ -27,7 +27,7 @@ async function connect(): Promise<{client: Client, dir: string, close: () => Pro
         args: [SERVER],
         env: {
             ...process.env as Record<string, string>,
-            MINISTRY_NEWSLETTERS_DIR: dir,
+            EPISTLE_DIR: dir,
             // Point Stello discovery at a folder that does not exist, so the test never reads or
             // writes a real Stello installation on the machine running it.
             STELLO_FILES_DIR: join(dir, 'no-stello-here'),
@@ -190,7 +190,7 @@ test('the store persists across server restarts', async () => {
             args: [SERVER],
             env: {
                 ...process.env as Record<string, string>,
-                MINISTRY_NEWSLETTERS_DIR: dir,
+                EPISTLE_DIR: dir,
                 STELLO_FILES_DIR: join(dir, 'no-stello-here'),
             },
         })
@@ -245,7 +245,7 @@ test('sending is refused when email is not configured, and says how to configure
 
         const error = await call_expecting_error(client, 'email_send',
             {id, dry_run: true, confirm_recipients: 0})
-        assert.match(error, /MINISTRY_SMTP_HOST/)
+        assert.match(error, /EPISTLE_SMTP_HOST/)
         assert.match(error, /stello_export/)
     } finally {
         await close()
