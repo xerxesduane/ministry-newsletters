@@ -54,6 +54,11 @@ supporters, that turns out to be the feature.
 You need [Node.js](https://nodejs.org) 20 or newer — download the LTS installer, click through it,
 done. That is the only prerequisite.
 
+> **Not on npm yet.** The `npx -y epistle-mcp` commands below are what setup will look like once
+> the package is published. Until then, follow **[Running from source](#running-from-source)**
+> first, and wherever you see `npx -y epistle-mcp`, use
+> `node /path/to/ministry-newsletters/dist/src/index.js` instead.
+
 Then pick how your AI connects.
 
 ### Claude Desktop, Claude Code, and anything else that runs a local tool
@@ -114,14 +119,30 @@ Add that URL as a custom MCP connector. Leave the window open while you work.
 > partner list and send email as you. Think hard before opening it: for missionaries in
 > restricted-access countries, a reachable supporter list is a real risk, not a theoretical one.
 
-### Running from source instead
+### Running from source
+
+This is the way to run Epistle today, until the npm package is published.
 
 ```bash
 git clone https://github.com/xerxesduane/ministry-newsletters.git
 cd ministry-newsletters
 npm install        # also builds
-npm test           # 126 tests
+npm test           # 126 tests — all should pass
+pwd                # note this path, you need it below
 node dist/src/index.js --help
+```
+
+Then point your assistant at the built file rather than at `npx`:
+
+```json
+{
+  "mcpServers": {
+    "epistle": {
+      "command": "node",
+      "args": ["/the/path/from/pwd/dist/src/index.js"]
+    }
+  }
+}
 ```
 
 <sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
