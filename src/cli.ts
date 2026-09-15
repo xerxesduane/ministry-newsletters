@@ -7,6 +7,8 @@
 
 import {randomBytes} from 'node:crypto'
 
+import {env_value} from './config.js'
+
 export interface ParsedArgs {
     mode: 'stdio' | 'http' | 'help' | 'version' | 'error'
     host: string
@@ -88,7 +90,7 @@ export function parse_args(argv: string[]): ParsedArgs {
         mode: 'stdio',
         host: DEFAULT_HOST,
         port: DEFAULT_PORT,
-        token: process.env['EPISTLE_TOKEN'] ?? null,
+        token: env_value('EPISTLE_TOKEN') ?? null,
         token_generated: false,
     }
 

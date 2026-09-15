@@ -51,67 +51,53 @@ supporters, that turns out to be the feature.
 
 ## Install
 
-You need [Node.js](https://nodejs.org) 20 or newer — download the LTS installer, click through it,
-done. That is the only prerequisite.
+**Download the latest `epistle-*.mcpb` from [Releases](https://github.com/xerxesduane/ministry-newsletters/releases),
+double-click it, and press Install.**
 
-Epistle is not on npm yet, so there is a one-time setup step: fetch it and build it.
+That is the whole thing. No Node.js, no terminal, no config file to edit — Claude Desktop carries
+the runtime Epistle needs and installs it like any other app.
+
+Claude Desktop will show a short form during install. Every field is optional:
+
+| Field | Fill it in if |
+|---|---|
+| Your ministry name | you want partners to see it in their inbox |
+| Your email address and app password | you want to send email directly, without Stello |
+| Stello Files folder | you use Stello and keep its folder somewhere unusual |
+
+Leave all of it blank to deliver through Stello. You can change any of it later in
+Settings → Extensions without reinstalling.
+
+> **Use an app password, never your account password.** In Gmail, create one at
+> [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords). Claude stores it;
+> Epistle never writes it into its own files.
+
+> **Direct email is for small lists.** It sends through your own mailbox, so your provider's limits
+> apply — Gmail cuts off around 500 messages a day — and nothing adds an unsubscribe link for you,
+> which bulk email is generally required to carry. Past a few dozen partners, deliver through
+> Stello or a mailing service instead of sending directly.
+
+### Other assistants, or running from source
+
+Claude Code, ChatGPT and anything else that speaks MCP need the server itself rather than the
+bundle:
 
 ```bash
 git clone https://github.com/xerxesduane/ministry-newsletters.git
 cd ministry-newsletters
 npm install        # installs dependencies and compiles
 npm test           # 126 tests, all should pass
+node dist/src/index.js --help    # prints the config for your client, with real paths
 ```
 
-<sub>No git? Download the [ZIP](https://github.com/xerxesduane/ministry-newsletters/archive/refs/heads/main.zip),
-unpack it, and run `npm install` inside the folder.</sub>
-
-Now note the full path to the file that was built — every step below needs it:
-
-| | |
-|---|---|
-| macOS / Linux | `/Users/you/ministry-newsletters/dist/src/index.js` |
-| Windows | `C:/Users/you/ministry-newsletters/dist/src/index.js` |
-
-<sub>On Windows use forward slashes. Backslashes have to be doubled inside JSON, and that is a
-common way to get a config that silently fails.</sub>
-
-> **Why not one line?** Because `npx -y epistle-mcp` needs the package to be on npm, and it is not
-> published yet. Installing straight from GitHub does not work either: npm 12 refuses git-sourced
-> packages by default (`EALLOWGIT`), a supply-chain protection worth leaving on. Publishing to npm
-> removes this whole section — setup becomes `npx -y epistle-mcp` with nothing to clone or build.
-
-Then pick how your AI connects.
-
-### Claude Desktop, Claude Code, and anything else that runs a local tool
-
-These launch Epistle themselves, each time they start.
-
-**Claude Desktop** — Settings → Developer → Edit Config, and add:
-
-```json
-{
-  "mcpServers": {
-    "epistle": {
-      "command": "node",
-      "args": ["/full/path/to/ministry-newsletters/dist/src/index.js"]
-    }
-  }
-}
-```
-
-Then quit Claude Desktop completely and reopen it — closing the window is not enough.
-
-**Claude Code** — one line:
+**Claude Code:**
 
 ```bash
 claude mcp add epistle -- node /full/path/to/ministry-newsletters/dist/src/index.js
 ```
 
-### ChatGPT, and other agents that connect to a URL
-
-These cannot launch a program on your computer; they connect to an address. So run Epistle
-yourself, then give the agent its URL:
+**ChatGPT and other agents that connect to a URL** cannot launch a program on your computer, so
+run Epistle yourself and give the agent its address:
 
 ```bash
 node /full/path/to/ministry-newsletters/dist/src/index.js --http
@@ -126,8 +112,6 @@ Epistle 0.2.0 is running.
 Add that URL to your agent as a custom MCP connector. Press Ctrl+C to stop.
 ```
 
-Add that URL as a custom MCP connector. Leave the window open while you work.
-
 > **A URL-based agent must be able to reach that address.** `127.0.0.1` means *this computer only*,
 > which is right for an agent running on the same machine. A cloud assistant — ChatGPT on the web
 > among them — cannot see it. To reach Epistle from elsewhere you have to expose it deliberately,
@@ -140,6 +124,16 @@ Add that URL as a custom MCP connector. Leave the window open while you work.
 > Epistle refuses to bind beyond your computer without one, because that port can read your
 > partner list and send email as you. Think hard before opening it: for missionaries in
 > restricted-access countries, a reachable supporter list is a real risk, not a theoretical one.
+
+### Building the bundle yourself
+
+```bash
+npm run bundle     # -> build/epistle-<version>.mcpb
+```
+
+Production dependencies are installed into the bundle, so it runs without a Node install on the
+user's machine. The tool list in the manifest is read from the built server rather than kept by
+hand, so it cannot drift.
 
 <sub>The git repository is still called `ministry-newsletters`; the tool it contains is Epistle.</sub>
 
@@ -160,7 +154,11 @@ If Stello keeps its files somewhere unusual, set `STELLO_FILES_DIR` (or point
 
 ### Optional: direct email
 
-Only needed if you want to send without Stello. Add to the server's `env`:
+Only needed if you want to send without Stello.
+
+Installed from the `.mcpb` bundle? You already filled this in during install — change it any time
+in Claude Desktop under Settings → Extensions → Epistle. The rest of this section is for running
+from source, where the same settings are environment variables on the server:
 
 | Variable | Meaning |
 |---|---|

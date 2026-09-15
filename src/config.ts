@@ -4,9 +4,25 @@ import {homedir, platform} from 'node:os'
 import {join} from 'node:path'
 import {existsSync} from 'node:fs'
 
+/**
+ * Read an environment variable, treating blank and unsubstituted values as absent.
+ *
+ * A .mcpb bundle declares settings the user fills in through Claude Desktop's own form, and
+ * leaves `${user_config.x}` in the environment for any the user skipped. Taken literally that
+ * placeholder is a non-empty string, so an unconfigured SMTP host would read as configured and
+ * fail at send time instead of reporting itself as unset.
+ */
+export function env_value(name: string): string | undefined {
+    const raw = process.env[name]?.trim()
+    if (!raw || raw.startsWith('${')) {
+        return undefined
+    }
+    return raw
+}
+
 /** Root for this connector's own data (newsletters, partners, exports). */
 export function data_dir(): string {
-    const override = process.env['EPISTLE_DIR']
+    const override = env_value('EPISTLE_DIR')
     if (override) {
         return override
     }
@@ -29,7 +45,7 @@ export function exports_dir(): string {
  * `<documents>/Stello Files` by default and remembers a moved folder in an immobile config.
  */
 export function stello_files_candidates(): string[] {
-    const override = process.env['STELLO_FILES_DIR']
+    const override = env_value('STELLO_FILES_DIR')
     if (override) {
         return [override]
     }
@@ -81,14 +97,14 @@ export interface SmtpConfig {
  * server config, which is where the user already keeps other secrets.
  */
 export function smtp_config(): SmtpConfig | null {
-    const host = process.env['EPISTLE_SMTP_HOST']
-    const user = process.env['EPISTLE_SMTP_USER']
-    const pass = process.env['EPISTLE_SMTP_PASS']
-    const from_address = process.env['EPISTLE_SMTP_FROM'] || user
+    const host = env_value('EPISTLE_SMTP_HOST')
+    const user = env_value('EPISTLE_SMTP_USER')
+    const pass = env_value('EPISTLE_SMTP_PASS')
+    const from_address = env_value('EPISTLE_SMTP_FROM') || user
     if (!host || !user || !pass || !from_address) {
         return null
     }
-    const port = Number(process.env['EPISTLE_SMTP_PORT'] || 587)
+    const port = Number(env_value('EPISTLE_SMTP_PORT') || 587)
     return {
         host,
         port,
@@ -96,16 +112,16 @@ export function smtp_config(): SmtpConfig | null {
         user,
         pass,
         from_address,
-        from_name: process.env['EPISTLE_SMTP_FROM_NAME'] || '',
-        reply_to: process.env['EPISTLE_SMTP_REPLY_TO'] || null,
+        from_name: env_value('EPISTLE_SMTP_FROM_NAME') || '',
+        reply_to: env_value('EPISTLE_SMTP_REPLY_TO') || null,
     }
 }
 
 /** Which SMTP settings are missing, for an actionable error message. */
 export function smtp_missing_vars(): string[] {
     const required = ['EPISTLE_SMTP_HOST', 'EPISTLE_SMTP_USER', 'EPISTLE_SMTP_PASS']
-    const missing = required.filter(name => !process.env[name])
-    if (!process.env['EPISTLE_SMTP_FROM'] && !process.env['EPISTLE_SMTP_USER']) {
+    const missing = required.filter(name => !env_value(name))
+    if (!env_value('EPISTLE_SMTP_FROM') && !env_value('EPISTLE_SMTP_USER')) {
         missing.push('EPISTLE_SMTP_FROM')
     }
     return missing

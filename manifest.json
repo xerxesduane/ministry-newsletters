@@ -1,0 +1,94 @@
+{
+  "manifest_version": "0.3",
+  "name": "epistle",
+  "display_name": "Epistle",
+  "version": "0.2.0",
+  "description": "Write ministry newsletters with your assistant and deliver them to your partners.",
+  "long_description": "Epistle lets you describe a ministry update in your own words and have your assistant write it, lay it out, and show you a preview before anything goes out.\n\nIt delivers two ways. If you use Stello, Epistle writes a file you import there, turning the newsletter into a real draft you review and send yourself — encrypted end to end, and retractable. Otherwise it can send as ordinary email through your own mail account.\n\nYour partner list, your newsletters and your email password stay on this computer. Nothing is uploaded, and Epistle never sends without showing you the content and the recipients first.",
+  "author": {
+    "name": "xerxesduane",
+    "url": "https://github.com/xerxesduane"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xerxesduane/ministry-newsletters.git"
+  },
+  "homepage": "https://github.com/xerxesduane/ministry-newsletters#readme",
+  "documentation": "https://github.com/xerxesduane/ministry-newsletters#readme",
+  "support": "https://github.com/xerxesduane/ministry-newsletters/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": ["newsletter", "ministry", "missionary", "stello", "email"],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/src/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/src/index.js"],
+      "env": {
+        "EPISTLE_SMTP_HOST": "${user_config.smtp_host}",
+        "EPISTLE_SMTP_PORT": "${user_config.smtp_port}",
+        "EPISTLE_SMTP_USER": "${user_config.smtp_user}",
+        "EPISTLE_SMTP_PASS": "${user_config.smtp_pass}",
+        "EPISTLE_SMTP_FROM_NAME": "${user_config.smtp_from_name}",
+        "EPISTLE_SMTP_REPLY_TO": "${user_config.smtp_reply_to}",
+        "STELLO_FILES_DIR": "${user_config.stello_files_dir}"
+      }
+    }
+  },
+  "user_config": {
+    "smtp_from_name": {
+      "type": "string",
+      "title": "Your ministry name",
+      "description": "The name partners see in their inbox, e.g. The Rock City Church.",
+      "required": false
+    },
+    "smtp_user": {
+      "type": "string",
+      "title": "Your email address",
+      "description": "The mailbox newsletters are sent from. Leave every email setting blank if you deliver through Stello instead.",
+      "required": false
+    },
+    "smtp_pass": {
+      "type": "string",
+      "title": "App password",
+      "description": "An app password, NOT your normal account password. In Gmail create one at myaccount.google.com/apppasswords. Stored by Claude, never written into Epistle's own files.",
+      "sensitive": true,
+      "required": false
+    },
+    "smtp_host": {
+      "type": "string",
+      "title": "Mail server",
+      "description": "Leave as is for Gmail. Outlook is smtp.office365.com.",
+      "default": "smtp.gmail.com",
+      "required": false
+    },
+    "smtp_port": {
+      "type": "number",
+      "title": "Mail server port",
+      "description": "587 for most providers, 465 if yours requires TLS.",
+      "default": 587,
+      "min": 1,
+      "max": 65535,
+      "required": false
+    },
+    "smtp_reply_to": {
+      "type": "string",
+      "title": "Reply-to address",
+      "description": "Where partner replies should go, if not the address above.",
+      "required": false
+    },
+    "stello_files_dir": {
+      "type": "directory",
+      "title": "Stello Files folder",
+      "description": "Only needed if you use Stello and keep its folder somewhere unusual. Epistle looks in Documents by default.",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  }
+}

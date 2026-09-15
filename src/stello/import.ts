@@ -9,7 +9,7 @@
 import {readFileSync, existsSync, readdirSync, statSync} from 'node:fs'
 import {join} from 'node:path'
 
-import {find_stello_files} from '../config.js'
+import {find_stello_files, env_value} from '../config.js'
 import type {Partner, PartnerGroup} from '../types.js'
 
 interface RawBackup {
@@ -35,7 +35,7 @@ export interface StelloSnapshot {
 
 /** Find Stello's most recent database backup, if the user has one. */
 export function find_backup_file(): string | null {
-    const explicit = process.env['STELLO_BACKUP_FILE']
+    const explicit = env_value('STELLO_BACKUP_FILE')
     if (explicit) {
         return existsSync(explicit) ? explicit : null
     }

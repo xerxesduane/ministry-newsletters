@@ -23,7 +23,9 @@
     "test": "npm run build && node --test dist/tests/*.test.js",
     "start": "node dist/src/index.js",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run build && node --test dist/tests/*.test.js"
+    "prepublishOnly": "npm run build && node --test dist/tests/*.test.js",
+    "bundle": "node scripts/build-mcpb.mjs",
+    "icon": "node scripts/make-icon.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
